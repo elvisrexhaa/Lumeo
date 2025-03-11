@@ -27,10 +27,8 @@ struct LumeoButton: View {
                     Image(systemName: systemImage)
                 } else {
                     Text(title)
-                    
                 }
             }
-            
         }
         .lumeoButtonStyle()
         

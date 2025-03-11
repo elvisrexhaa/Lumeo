@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 // StarShape struct for managing star properties
 
@@ -14,6 +15,7 @@ import SwiftUI
 // HomeScreen view
 struct HomeScreen: View {
     @State private var animateHomeScreen: Bool = false
+    @EnvironmentObject private var photoStore: PhotoStore
 
     var body: some View {
         ZStack {
@@ -29,10 +31,11 @@ struct HomeScreen: View {
                     }
                     
                     LumeoButton(title: "Upload Photos") {
-                        // Add action here
+                        photoStore.isShowingPhotoPicker = true
                     }
                 }
                 .offset(y: animateHomeScreen ? 0 : UIScreen.main.bounds.height)
+                
             }
             
             // Overlay with stars
@@ -48,6 +51,13 @@ struct HomeScreen: View {
                 }
             }
         }
+        .onChange(of: photoStore.photoPickerItems, { oldValue, newValue in
+            Task {
+                try await photoStore.selectPhotos()
+                print(newValue.count)
+            }
+        })
+        .photosPicker(isPresented: $photoStore.isShowingPhotoPicker, selection: $photoStore.photoPickerItems, maxSelectionCount: 3)
         .onAppear {
             withAnimation(.snappy(duration: 0.8)) {
                 animateHomeScreen = true
@@ -69,6 +79,7 @@ extension HomeScreen {
 
 #Preview {
     HomeScreen()
+        .environmentObject(PhotoStore())
 }
 
 

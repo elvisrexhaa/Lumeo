@@ -9,9 +9,14 @@ import SwiftUI
 
 @main
 struct LumeoApp: App {
+    
+    @StateObject private var photoStore = PhotoStore()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            HomeScreen()
+                .environmentObject(photoStore)
         }
+        
     }
 }
