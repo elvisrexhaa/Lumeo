@@ -8,59 +8,54 @@
 import SwiftUI
 import PhotosUI
 
-// StarShape struct for managing star properties
-
-
-
 // HomeScreen view
 struct HomeScreen: View {
     @State private var animateHomeScreen: Bool = false
     @EnvironmentObject private var photoStore: PhotoStore
 
     var body: some View {
-        ZStack {
-            Color.lumeoBg
-                .ignoresSafeArea()
-            
-            VStack {
-                homeTitle
+        NavigationStack {
+            ZStack {
+                LumeoBackground()
                 
-                HStack {
-                    LumeoButton(title: "Take Photos") {
-                        // Add action here
-                    }
+                VStack {
+                    homeTitle
                     
-                    LumeoButton(title: "Upload Photos") {
-                        photoStore.isShowingPhotoPicker = true
+                    HStack {
+                        LumeoButton(title: "Take Photos") {
+                            // Add action here
+                        }
+                        
+                        LumeoButton(title: "Upload Photos") {
+                            photoStore.isShowingPhotoPicker = true
+                        }
                     }
-                }
-                .offset(y: animateHomeScreen ? 0 : UIScreen.main.bounds.height)
-                
-            }
-            
-            // Overlay with stars
-            GeometryReader { geometry in
-                ZStack {
-                    ForEach(StarShape.generateStars(screenSize: geometry.size)) { star in
-                        Star()
-                            .frame(width: star.size.width, height: star.size.height)
-                            .foregroundStyle(star.color)
-                            .position(star.position)
-                            
-                    }
+                    .offset(y: animateHomeScreen ? 0 : UIScreen.main.bounds.height)
                 }
             }
-        }
-        .onChange(of: photoStore.photoPickerItems, { oldValue, newValue in
-            Task {
-                try await photoStore.selectPhotos()
-                print(newValue.count)
-            }
-        })
-        .photosPicker(isPresented: $photoStore.isShowingPhotoPicker, selection: $photoStore.photoPickerItems, maxSelectionCount: 3)
-        .onAppear {
-            withAnimation(.snappy(duration: 0.8)) {
-                animateHomeScreen = true
+            .safeAreaInset(edge: .bottom, content: {
+                if photoStore.images.count == 3 {
+                    LumeoButton(title: "Continue") {
+                        
+                    }
+                    .transition(.move(edge: .bottom))
+                    
+                    
+                }
+            })
+            .onChange(of: photoStore.photoPickerItems, { oldValue, newValue in
+                Task {
+                    if photoStore.photoPickerItems.count == 3 {
+                        try await photoStore.selectPhotos()
+                        print(newValue.count)
+                    }
+                }
+            })
+            .photosPicker(isPresented: $photoStore.isShowingPhotoPicker, selection: $photoStore.photoPickerItems, maxSelectionCount: 3)
+            .onAppear {
+                withAnimation(.snappy(duration: 0.8)) {
+                    animateHomeScreen = true
+                }
             }
         }
     }
