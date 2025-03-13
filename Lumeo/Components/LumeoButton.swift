@@ -12,22 +12,14 @@ struct LumeoButton: View {
     var systemImage: String?
     let action: () -> ()
     var body: some View {
-        ZStack {
-            Capsule()
-                .frame(height: UIScreen.main.bounds.height * 0.05)
-                .padding(.horizontal)
-                .offset(y: 8)
-                .foregroundStyle(.lumeoButton.opacity(0.4).shadow(.drop(color: .lumeoButton, radius: 20)))
-            
-            
-            Button {
-                action()
-            } label: {
-                if let systemImage = systemImage {
-                    Image(systemName: systemImage)
-                } else {
-                    Text(title)
-                }
+        
+        Button {
+            action()
+        } label: {
+            if let systemImage = systemImage {
+                Image(systemName: systemImage)
+            } else {
+                Text(title)
             }
         }
         .lumeoButtonStyle()
@@ -43,17 +35,30 @@ struct LumeoButton: View {
 
 struct LumeoButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.custom("Halu", size: configuration.isPressed ? 26 : 22))
-            .kerning(2)
-            .foregroundStyle(.white)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
-            .background(.lumeoButton, in: Capsule())
-            .scaleEffect(configuration.isPressed ? 0.85 : 1)
-            .rotationEffect(.degrees(configuration.isPressed ? 3 : 0))
-            .animation(.snappy, value: configuration.isPressed)
-            .padding(.horizontal)
+        ZStack {
+            Capsule()
+                .frame(height: UIScreen.main.bounds.height * 0.05)
+                .padding(.horizontal)
+                .offset(y: 8)
+                .foregroundStyle(.lumeoButton.opacity(0.4).shadow(.drop(color: .lumeoButton, radius: 20)))
+            
+            configuration.label
+                .font(.custom("Halu", size: 22))
+                .kerning(2)
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(.lumeoButton, in: Capsule())
+                .padding(.horizontal)
+        }
+        .scaleEffect(configuration.isPressed ? 0.85 : 1)
+        .rotationEffect(.degrees(configuration.isPressed ? 3 : 0))
+        .animation(.snappy, value: configuration.isPressed)
+        
+        
+        
+        
+        
     }
 }
 

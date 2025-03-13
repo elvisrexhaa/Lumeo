@@ -12,9 +12,10 @@ import SwiftUI
 
 struct AddNoteScreen: View {
     @State private var memoriesText: String = ""
-    let maxCharacterCount: Int = 50 // Hard limit for input
+    let maxCharacterCount: Int = 100 // Hard limit for input
+    @State private var animateTextField: Bool = false
     
-    // Computed property to determine current CharacterLimit
+    
     private var characterLimit: CharacterLimit {
         CharacterLimit.fromCount(memoriesText.count)
     }
@@ -24,21 +25,28 @@ struct AddNoteScreen: View {
             LumeoBackground()
                 .blur(radius: characterLimit.blur) // Apply blur based on enum
             
-            addNoteHeaderSection
-
+            VStack {
+                addNoteHeaderSection
+                
+                if isMemoriesTextValid() {
+                    LumeoButton(title: "Continue") {
+                        print("Continue with text: \(memoriesText)")
+                    }
+                }
+            }
+            .animation(.snappy, value: memoriesText)
         }
         .onChange(of: memoriesText) { oldValue, newValue in
             if newValue.count > maxCharacterCount {
                 memoriesText = String(newValue.prefix(maxCharacterCount))
             }
         }
-        .safeAreaInset(edge: .bottom) {
-            if isMemoriesTextValid() {
-                LumeoButton(title: "Continue") {
-                    print("Continue with text: \(memoriesText)")
-                }
+        .onAppear {
+            withAnimation(.snappy(duration: 0.8)) {
+                animateTextField = true
             }
         }
+       
     }
     
     private func wordExceedsMaxCharacterCount() -> Bool {
@@ -76,16 +84,22 @@ extension AddNoteScreen {
                         RoundedRectangle(cornerRadius: 15)
                             .stroke(characterLimit.characterLimitColor, lineWidth: 2)
                     }
+                    
             )
             .padding(.horizontal)
+            .scaleEffect(animateTextField ? 1 : 0.01)
+            .rotationEffect(.degrees(animateTextField ? 0 : -40))
             
             Text("\(memoriesText.count)/\(maxCharacterCount)")
                 .font(.custom("Halu", size: 20))
-                .foregroundStyle(characterLimit.characterLimitColor) // Use enum color
+                .foregroundStyle(characterLimit.characterLimitTextColor) // Use enum color
                 .frame(maxWidth: .infinity, alignment: .trailing)
                 .padding(.trailing, 20)
                 .kerning(1.5)
         }
-        .animation(.snappy, value: characterLimit) // Animate changes in limit state
+        
+        .animation(.snappy, value: memoriesText) // Animate changes in limit state
+  
     }
+    
 }

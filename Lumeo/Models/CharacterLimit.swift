@@ -13,10 +13,21 @@ enum CharacterLimit {
     case halfway
     case full
     
+    var characterLimitTextColor: Color {
+        switch self {
+        case .none:
+            return .gray
+        case .halfway:
+            return .yellow
+        case .full:
+            return .red
+        }
+    }
+    
     var characterLimitColor: Color {
         switch self {
         case .none:
-            return .clear
+            return .white
         case .halfway:
             return .yellow
         case .full:
@@ -35,13 +46,13 @@ enum CharacterLimit {
         }
     }
     
-    static func fromCount(_ count: Int) -> CharacterLimit {
+    static func fromCount(_ count: Int) -> Self {
         switch count {
-        case 0...24:
+        case 0...49:
             return .none
-        case 25...49:
+        case 50...85:
             return .halfway
-        case 50...:
+        case 86...:
             return .full
         default:
             return .none // Fallback, though not needed with current ranges

@@ -12,7 +12,7 @@ import PhotosUI
 struct HomeScreen: View {
     @State private var animateHomeScreen: Bool = false
     @EnvironmentObject private var photoStore: PhotoStore
-
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -26,23 +26,38 @@ struct HomeScreen: View {
                             // Add action here
                         }
                         
-                        LumeoButton(title: "Upload Photos") {
+                        LumeoButton(title: photoStore.images.isEmpty ? "Upload Photos" : "Edit Photos" ) {
                             photoStore.isShowingPhotoPicker = true
                         }
                     }
                     .offset(y: animateHomeScreen ? 0 : UIScreen.main.bounds.height)
+                   
+                    
                 }
             }
             .safeAreaInset(edge: .bottom, content: {
-                if photoStore.images.count == 3 {
-                    LumeoButton(title: "Continue") {
+                VStack {
+                    if photoStore.images.count == 3 && photoStore.photoPickerItems.count == 3  {
                         
+                        NavigationLink {
+                            LumeoStripCardScreen(images: photoStore.images)
+                        } label: {
+                            Text("See Preview")
+                        }
+                        
+                        NavigationLink {
+                            AddNoteScreen()
+                        } label: {
+                            Text("Continue")
+                        }
                     }
-                    .transition(.move(edge: .bottom))
-                    
-                    
                 }
+                .lumeoButtonStyle()
+                .transition(.move(edge: .bottom))
+                .animation(.smooth, value: photoStore.images)
+                .safeAreaPadding()
             })
+            
             .onChange(of: photoStore.photoPickerItems, { oldValue, newValue in
                 Task {
                     if photoStore.photoPickerItems.count == 3 {
