@@ -31,8 +31,6 @@ struct HomeScreen: View {
                         }
                     }
                     .offset(y: animateHomeScreen ? 0 : UIScreen.main.bounds.height)
-                   
-                    
                 }
             }
             .safeAreaInset(edge: .bottom, content: {
@@ -80,7 +78,7 @@ struct HomeScreen: View {
 extension HomeScreen {
     var homeTitle: some View {
         Text("Welcome to Lumeo Vintage Moments")
-            .foregroundStyle(.lumeoButton)
+            .foregroundStyle(.primary)
             .multilineTextAlignment(.center)
             .font(.custom("Halu", size: 50)) // Ensure "Halu" OTF is added to project and Info.plist
             .offset(y: animateHomeScreen ? 0 : -UIScreen.main.bounds.height)
